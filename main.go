@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 	"github.com/joho/godotenv"
 	"log"
+	"net/http"
 )
 
 type Book struct {
@@ -15,6 +16,30 @@ type Book struct {
 
 type Repository struct {
 	DB *gorm.DB
+}
+
+func (r *Repository) CreateBook(context *fiber.Ctx) error {
+	book := Book{}
+
+	err := context.BodyParser(&book)
+
+	if err != nil {
+		context.Status(http.StatusUnprocessableEntity).JSON(
+			&fiber.Map{"message":"request failed"})
+			return err
+	}
+
+	err = r.DB.Create(&book).Error
+	if err != nil {
+		context.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"message":"could not create book"})
+			return err
+	}
+
+	context.Status(http.StatusOK).JSON(&fiber.Map{
+		"message": "book has been added"})
+
+	return nil
 }
 
 func (r *Repository) SetupRoutes(app *fiber.App) {
