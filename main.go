@@ -41,6 +41,11 @@ func (r *Repository) CreateBook(context *fiber.Ctx) error {
 
 	return nil
 }
+func (r *Repository) GetBooks(context *fiber.Ctx) error {
+	
+
+	return nil
+}
 
 func (r *Repository) SetupRoutes(app *fiber.App) {
 	api := app.Group("/api")
